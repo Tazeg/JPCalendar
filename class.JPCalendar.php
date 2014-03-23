@@ -6,6 +6,7 @@
 //  MAIL	: jeffgazet@gmail.com
 //  LICENCE	: GNU GENERAL PUBLIC LICENSE Version 2, June 1991
 //-----------------------------------------------------------------------
+// v0.3.3 : minor code optimization
 // v0.3.2 : first release, minor rendering improvments
 // v0.3.1 : display YEAR : ajout de bordures
 // v0.3.0 : display MONTH ajouté + today en jaune
@@ -27,6 +28,7 @@ class Calendar
 	private $_eventColor; // color event
 	private $_eventFrom; // date from 'YYYY-MM-DD HH:II'
 	private $_eventTo; // date to 'YYYY-MM-DD HH:II'
+	private $_dateToday; // date to prevent multiple calls to date()
 	
 	public function __construct()
 		{
@@ -39,9 +41,15 @@ class Calendar
 		$this->_eventFrom=array();
 		$this->_eventTo=array();
 		$this->_eventColor=array();
+		$this->_dateToday=array
+			(
+			'd'=>date('d'),
+			'm'=>date('m'),
+			'Y'=>date('Y')
+			);
 
 		self::setStartOfWeek($this->_startOfWeek); // calls setLang()
-		self::setDisplay('year',date('Y')); 
+		self::setDisplay('year',$this->_dateToday['Y']); 
 		}
 
 	public function setStartOfWeek($txt)
@@ -306,7 +314,7 @@ class Calendar
 		if($year+1<10000) {$r.=' <input type="button" onClick="document.location.href=\'?calDate='.($year+1).'\'" value="&gt;&gt;">'.PHP_EOL;}
 
 		// Today button
-		$r.='<br><input type="button" onClick="document.location.href=\'?calDate='.date('Y').'\'" value="'.$this->_lngOther[0].'">'.PHP_EOL;
+		$r.='<br><input type="button" onClick="document.location.href=\'?calDate='.$this->_dateToday['Y'].'\'" value="'.$this->_lngOther[0].'">'.PHP_EOL;
 
 		return $r;
 		}
@@ -330,7 +338,7 @@ class Calendar
 		if($y+1<10000) {$r.=' <input type="button" onClick="document.location.href=\'?calDate='.$next.'\'" value="&gt;&gt;">'.PHP_EOL;}
 
 		// Today button
-		$r.='<br><input type="button" onClick="document.location.href=\'?calDate='.date('Y').'-'.date('m').'\'" value="'.$this->_lngOther[0].'">'.PHP_EOL;
+		$r.='<br><input type="button" onClick="document.location.href=\'?calDate='.$this->_dateToday['Y'].'-'.$this->_dateToday['m'].'\'" value="'.$this->_lngOther[0].'">'.PHP_EOL;
 
 		return $r;
 		}
@@ -341,7 +349,8 @@ class Calendar
 		$r='';
 		$r.='<style type="text/css">'.PHP_EOL;
 
-		$r.='table {'.PHP_EOL;  
+		$r.='table {'.PHP_EOL;
+		$r.=' -webkit-print-color-adjust: exact;'.PHP_EOL; // pour imprimer les couleurs de cellules
 		$r.=' border-spacing: 0px;'.PHP_EOL; 
 		$r.=' border-padding: 0px;'.PHP_EOL; 
 		$r.=' border: 1px solid black;'.PHP_EOL;
@@ -409,7 +418,7 @@ class Calendar
 		$title='';
 
 		// today cell in yellow
-		if($d==date('d') && $m==date('m') && $y==date('Y')) {$color='#FFFF00';}
+		if($d==$this->_dateToday['d'] && $m==$this->_dateToday['m'] && $y==$this->_dateToday['Y']) {$color='#FFFF00';}
 
 		$mktime=mktime(0,0,0,$m,$d,$y);
 		while (list($key, $value) = each($this->_eventLabel))
@@ -422,6 +431,7 @@ class Calendar
 				// there is an event on this day so we set color and title
 				if($color=='') {$color=$this->_eventColor[$key];}
 				$title=$value;
+				break;
 				}
 			}
 		reset($this->_eventLabel);
