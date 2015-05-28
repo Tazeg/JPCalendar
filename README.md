@@ -23,7 +23,7 @@ echo $cal->render();
 ```
 will render
 
-![month view](http://fr.jeffprod.com/blog/images/2014-03-22-jpcalendar-mensuel.png)
+![month view](http://fr.jeffprod.com/img/2014-03-22-jpcalendar-mensuel.png)
 
 ```php
 require 'class.JPCalendar.php';
@@ -37,7 +37,7 @@ echo $cal->render();
 ```
 will render
 
-![year view](http://fr.jeffprod.com/blog/images/2014-03-22-jpcalendar-annuel.png)
+![year view](http://fr.jeffprod.com/img/2014-03-22-jpcalendar-annuel.png)
 
 To set start of week, use
 
